@@ -22,7 +22,7 @@ import {
   Card,
   Col,
 } from 'react-bootstrap';
-import { useState, useEffect } from 'react';
+import { useState, useEffect,useRef } from 'react';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 
@@ -44,25 +44,41 @@ const store = configureStore({
     order: orderReducer,
   },
 });
+
+
+
+
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
-  const dispatch = useDispatch();
+  const [count, setCount] = useState(0);
+  const tick = () => {
+    //let newCount = count < 60 ? count + 1 : 0
+    setCount((prevState) => prevState < 60 ? prevState +1 : 0);
+  }
   useEffect(() => {
+    const timer = setInterval(() => tick(), 1000);
+    return () => clearInterval(timer);
+  });
+  // const dispatch = useDispatch();
+  useEffect(() => {
+    if (count === 0) {
     const fetchProducts = async () => {
-      const res = await axios.get('https://cabalapi.cyclic.app/api/cbstatus');
+      const res = await axios.get('https://cabalapi.cyclic.app/api/cb');
       setProducts(res.data);
     };
     fetchProducts();
-  }, []);
+  }
+  }, [count]);
   return (
+  
     <Row className="g-1">
       {products.map((products) => (
-        <Col md={2}>
+        <Col md={1}>
           <ListGroup>
             <ListGroup.Item key={products.id}>
               {products.UserVM} จอ : {products.VMNumber} ID : {products.UserID}{' '}
               จุด :{products.Point} รอบ:{products.Round} ลูป:{products.Loop}
-              {'   '}
+              {'   '}          
               <form>
                 <Button
                   variant="outline-primary"
@@ -99,6 +115,15 @@ const ProductPage = () => {
 const Layout = () => {
   const products = useSelector((state) => state.order.products);
   const ordersCount = products.length;
+  const [count, setCount] = useState(60);
+  const tick = () => {
+    //let newCount = count < 60 ? count + 1 : 0
+    setCount((prevState) => prevState > 0 ? prevState -1 : 60);
+  }
+  useEffect(() => {
+    const timer = setInterval(() => tick(), 1000);
+    return () => clearInterval(timer);
+  });
   return (
     <div>
       <Navbar bg="info" variant="light">
@@ -118,12 +143,15 @@ const Layout = () => {
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/products">
                 VmMonitor
-              </Nav.Link>
-              <Nav.Link as={Link} to="/orders">
-                Orders <Badge bg="secondary">{ordersCount}</Badge>
-              </Nav.Link>
+              </Nav.Link>         
               <Nav.Link href="https://cabalapi.cyclic.app/api/cbstatus/report/csv">
                 Download CSV
+              </Nav.Link>
+              {/* <Nav.Link as={Link} to="/orders">
+                Orders <Badge bg="secondary">{ordersCount}</Badge>
+              </Nav.Link> */}
+            <Nav.Link as={Link} to="/orders">
+                Timer Monitor <Badge bg="secondary">{count}</Badge>
               </Nav.Link>
             </Nav>
           </Navbar.Collapse>
@@ -160,7 +188,7 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/products" />}></Route>
             <Route path="products" element={<ProductPage />}></Route>
-            <Route path="orders" element={<OrderPage />}></Route>
+            {/* <Route path="orders" element={<OrderPage />}></Route> */}
             <Route path="products/:id" element={<ProductDetailsPage />}></Route>
           </Route>
         </Routes>
