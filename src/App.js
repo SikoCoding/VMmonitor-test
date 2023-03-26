@@ -1,4 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
+import logo from './logo1.png';
 import axios from 'axios';
 import {
   BrowserRouter,
@@ -17,6 +18,9 @@ import {
   Container,
   Badge,
   Button,
+  Row,
+  Card,
+  Col,
 } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
@@ -40,37 +44,56 @@ const store = configureStore({
     order: orderReducer,
   },
 });
-const IndexPage = () => {
-  return <div>Index Page</div>;
-};
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchProducts = async () => {
-      const res = await axios.get('https://cabalapi.cyclic.app/api/cb');
+      const res = await axios.get('https://cabalapi.cyclic.app/api/cbstatus');
       setProducts(res.data);
     };
     fetchProducts();
   }, []);
   return (
-    <ListGroup>
-      {products.map((product) => (
-        <ListGroup.Item key={product.id}>
-          UserVM : {product.UserVM} จอที่ : {product.VMNumber} ID :{' '}
-          {product.UserID} Status : จุดที่ {product.Point} ลูปที่ {product.Loop}{' '}
-          {/* <Button variant="outline-primary" onClick={() => dispatch(addProduct(product))}>
-            Start
-          </Button> */}
-          <Button variant="outline-primary" onClick={()=>alert("อันแน่!!! กดทำไมจ้ะ มันยังใช้ไม่ได้")}>
-            Start
-          </Button>
-          <Button variant="outline-danger" onClick={()=>alert("ยังกดอีก มันยังใช้ไม่ได้นะจ้ะ")}>
-            Stop
-          </Button>
-        </ListGroup.Item>
+    <Row className="g-1">
+      {products.map((products) => (
+        <Col md={2}>
+          <ListGroup>
+            <ListGroup.Item key={products.id}>
+              {products.UserVM} จอ : {products.VMNumber} ID : {products.UserID}{' '}
+              จุด :{products.Point} รอบ:{products.Round} ลูป:{products.Loop}
+              {'   '}
+              <form>
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  align="right"
+                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
+                >
+                  Start
+                </Button>{' '}
+                <Button
+                  variant="outline-danger"
+                  size="sm"
+                  align="right"
+                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
+                >
+                  Stop
+                </Button>{' '}
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  align="right"
+                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
+                >
+                  ปิดเกมส์
+                </Button>{' '}
+              </form>
+            </ListGroup.Item>
+          </ListGroup>
+        </Col>
       ))}
-    </ListGroup>
+    </Row>
   );
 };
 const Layout = () => {
@@ -78,9 +101,16 @@ const Layout = () => {
   const ordersCount = products.length;
   return (
     <div>
-      <Navbar bg="dark" variant="dark">
+      <Navbar bg="info" variant="light">
         <Container>
           <Navbar.Brand as={Link} to="/">
+            <img
+              alt=""
+              src={logo}
+              width="30"
+              height="30"
+              className="d-inline-block align-top"
+            />{' '}
             Etai Team
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
