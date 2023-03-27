@@ -54,8 +54,8 @@ const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [count, setCount] = useState(0);
   const tick = () => {
-    //let newCount = count < 60 ? count + 1 : 0
-    setCount((prevState) => (prevState < 60 ? prevState + 1 : 0));
+    //let newCount = count < 30 ? count + 1 : 0
+    setCount((prevState) => (prevState < 30 ? prevState + 1 : 0));
     TimeReset = count;
   };
   useEffect(() => {
