@@ -63,7 +63,7 @@ const ProductPage = () => {
   useEffect(() => {
     if (count === 0) {
     const fetchProducts = async () => {
-      const res = await axios.get('https://cabalapi.cyclic.app/api/cb');
+      const res = await axios.get('http://141.98.16.18:3000/api/cb');
       setProducts(res.data);
     };
     fetchProducts();
@@ -73,7 +73,7 @@ const ProductPage = () => {
   
     <Row className="g-1">
       {products.map((products) => (
-        <Col md={1}>
+        <Col md={2}>
           <ListGroup>
             <ListGroup.Item key={products.id}>
               {products.UserVM} จอ : {products.VMNumber} ID : {products.UserID}{' '}
