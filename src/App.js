@@ -22,6 +22,8 @@ import {
   Card,
   Col,
   ButtonGroup,
+  DropdownButton,
+  Dropdown
 } from 'react-bootstrap';
 import { useState, useEffect, useRef } from 'react';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
@@ -95,7 +97,7 @@ const ProductPage = () => {
               <ButtonGroup size="sm">
                 <Button variant="primary">{products.UserVM}</Button>
                 <Button variant="outline-primary">{products.VMNumber}</Button>
-                <Button  variant="outline-primary">{products.UserID}</Button>
+                <Button variant="outline-primary">{products.UserID}</Button>
               </ButtonGroup>
               <form>
                 <Button
@@ -105,11 +107,18 @@ const ProductPage = () => {
                   onClick={() => alert(CheckColor)}
                 >
                   {ErrBugs}
-                </Button>{' '}
-                <ButtonGroup size="sm">
-                  <Button variant="outline-secondary"> รอบ{products.Round}{' '}ลูป{products.Loop}</Button>              
-                </ButtonGroup>
-            
+                </Button>{' '}             
+                <DropdownButton
+                  as={ButtonGroup}
+                  title={products.Loop}
+                  id="bg-vertical-dropdown-1"
+                  size="sm"
+                  variant="outline-secondary"
+                >
+                  <Dropdown.Item eventKey="1">จุด : {products.Point}</Dropdown.Item>
+                  <Dropdown.Item eventKey="2">รอบ: {products.Round}</Dropdown.Item>
+                  <Dropdown.Item eventKey="3">ลูป : {products.Loop}</Dropdown.Item>
+                </DropdownButton>
               </form>
             </ListGroup.Item>
           </ListGroup>
