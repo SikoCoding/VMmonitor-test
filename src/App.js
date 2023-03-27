@@ -21,8 +21,9 @@ import {
   Row,
   Card,
   Col,
+  ButtonGroup,
 } from 'react-bootstrap';
-import { useState, useEffect,useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
 import { Provider, useSelector, useDispatch } from 'react-redux';
 
@@ -45,16 +46,16 @@ const store = configureStore({
   },
 });
 
-
-
+let TimeReset;
 
 const ProductPage = () => {
   const [products, setProducts] = useState([]);
   const [count, setCount] = useState(0);
   const tick = () => {
     //let newCount = count < 60 ? count + 1 : 0
-    setCount((prevState) => prevState < 60 ? prevState +1 : 0);
-  }
+    setCount((prevState) => (prevState < 60 ? prevState + 1 : 0));
+    TimeReset = count;
+  };
   useEffect(() => {
     const timer = setInterval(() => tick(), 1000);
     return () => clearInterval(timer);
@@ -62,48 +63,53 @@ const ProductPage = () => {
   // const dispatch = useDispatch();
   useEffect(() => {
     if (count === 0) {
-    const fetchProducts = async () => {
-      const res = await axios.get('https://cabalapi.cyclic.app/api/cb');
-      setProducts(res.data);
-    };
-    fetchProducts();
-  }
+      const fetchProducts = async () => {
+        const res = await axios.get('https://cabalapi.cyclic.app/api/cb');
+        setProducts(res.data);
+      };
+      fetchProducts();
+    }
   }, [count]);
+  let CheckColor;
+  let ErrBugs;
+  function CheckEtai(name) {
+    if (name == '1') {
+      CheckColor = 'warning';
+      ErrBugs = 'กำลังบอท...';
+    } else if (name == '2') {
+      CheckColor = 'success';
+      ErrBugs = 'ลงดันเสร็จ';
+    } else if (name == '3') {
+      CheckColor = 'danger';
+      ErrBugs = 'บอทมีปัญหา';
+    }
+  }
+
   return (
-  
     <Row className="g-1">
       {products.map((products) => (
-        <Col md={2}>
+        <Col md={1}>
           <ListGroup>
             <ListGroup.Item key={products.id}>
-              {products.UserVM} จอ : {products.VMNumber} ID : {products.UserID}{' '}
-              จุด :{products.Point} รอบ:{products.Round} ลูป:{products.Loop}
-              {'   '}          
+              {CheckEtai(products.Status)}
+              <ButtonGroup size="sm">
+                <Button variant="primary">{products.UserVM}</Button>
+                <Button variant="outline-primary">{products.VMNumber}</Button>
+                <Button  variant="outline-primary">{products.UserID}</Button>
+              </ButtonGroup>
               <form>
                 <Button
-                  variant="outline-primary"
+                  variant={CheckColor}
                   size="sm"
                   align="right"
-                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
+                  onClick={() => alert(CheckColor)}
                 >
-                  Start
+                  {ErrBugs}
                 </Button>{' '}
-                <Button
-                  variant="outline-danger"
-                  size="sm"
-                  align="right"
-                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
-                >
-                  Stop
-                </Button>{' '}
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  align="right"
-                  onClick={() => alert('กดทำไม มันยังใช่ไม่ได้')}
-                >
-                  ปิดเกมส์
-                </Button>{' '}
+                <ButtonGroup size="sm">
+                  <Button variant="outline-secondary"> รอบ{products.Round}{' '}ลูป{products.Loop}</Button>              
+                </ButtonGroup>
+            
               </form>
             </ListGroup.Item>
           </ListGroup>
@@ -115,15 +121,6 @@ const ProductPage = () => {
 const Layout = () => {
   const products = useSelector((state) => state.order.products);
   const ordersCount = products.length;
-  const [count, setCount] = useState(60);
-  const tick = () => {
-    //let newCount = count < 60 ? count + 1 : 0
-    setCount((prevState) => prevState > 0 ? prevState -1 : 60);
-  }
-  useEffect(() => {
-    const timer = setInterval(() => tick(), 1000);
-    return () => clearInterval(timer);
-  });
   return (
     <div>
       <Navbar bg="info" variant="light">
@@ -143,16 +140,13 @@ const Layout = () => {
             <Nav className="me-auto">
               <Nav.Link as={Link} to="/products">
                 VmMonitor
-              </Nav.Link>         
+              </Nav.Link>
               <Nav.Link href="https://cabalapi.cyclic.app/api/cbstatus/report/csv">
                 Download CSV
               </Nav.Link>
               {/* <Nav.Link as={Link} to="/orders">
                 Orders <Badge bg="secondary">{ordersCount}</Badge>
               </Nav.Link> */}
-            <Nav.Link as={Link} to="/orders">
-                Timer Monitor <Badge bg="secondary">{count}</Badge>
-              </Nav.Link>
             </Nav>
           </Navbar.Collapse>
         </Container>
