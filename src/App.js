@@ -23,7 +23,8 @@ import {
   Col,
   ButtonGroup,
   DropdownButton,
-  Dropdown
+  Dropdown,
+  Table,
 } from 'react-bootstrap';
 import { useState, useEffect, useRef } from 'react';
 import { createSlice, configureStore } from '@reduxjs/toolkit';
@@ -103,11 +104,10 @@ const ProductPage = () => {
                 <Button
                   variant={CheckColor}
                   size="sm"
-                  align="right"
-                  onClick={() => alert(CheckColor)}
+                  align="right"                 
                 >
                   {ErrBugs}
-                </Button>{' '}             
+                </Button>{' '}
                 <DropdownButton
                   as={ButtonGroup}
                   title={products.Loop}
@@ -115,9 +115,15 @@ const ProductPage = () => {
                   size="sm"
                   variant="outline-secondary"
                 >
-                  <Dropdown.Item eventKey="1">จุด : {products.Point}</Dropdown.Item>
-                  <Dropdown.Item eventKey="2">รอบ: {products.Round}</Dropdown.Item>
-                  <Dropdown.Item eventKey="3">ลูป : {products.Loop}</Dropdown.Item>
+                  <Dropdown.Item eventKey="1">
+                    จุด : {products.Point}
+                  </Dropdown.Item>
+                  <Dropdown.Item eventKey="2">
+                    รอบ: {products.Round}
+                  </Dropdown.Item>
+                  <Dropdown.Item eventKey="3">
+                    ลูป : {products.Loop}
+                  </Dropdown.Item>
                 </DropdownButton>
               </form>
             </ListGroup.Item>
@@ -150,12 +156,9 @@ const Layout = () => {
               <Nav.Link as={Link} to="/products">
                 VmMonitor
               </Nav.Link>
-              <Nav.Link href="https://cabalapi.cyclic.app/api/cbstatus/report/csv">
-                Download CSV
+              <Nav.Link as={Link} to="/checkgem">
+                Gem
               </Nav.Link>
-              {/* <Nav.Link as={Link} to="/orders">
-                Orders <Badge bg="secondary">{ordersCount}</Badge>
-              </Nav.Link> */}
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -183,6 +186,53 @@ const OrderPage = () => {
   );
 };
 
+const GemPage = () => {
+  const [products, setProducts] = useState([]);
+
+  // const dispatch = useDispatch();
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const res = await axios.get('https://cabalapi.cyclic.app/api/cbstatus');
+      setProducts(res.data);
+    };
+    fetchProducts();
+  }, []);
+  return (
+    <div className="container text-center">
+      <Table striped bordered hover>
+        <thead>
+          <tr>
+            <th >          
+              <Button  size="sm" href="https://cabalapi.cyclic.app/api/cbstatus/report/csv">Download CSV</Button>
+            </th>
+            <th>UserID</th>
+            <th>Level</th>
+            <th>Gem</th>
+            <th>Yuan</th>
+            <th>Stone</th>
+            <th>User</th>
+            <th>Time Update</th>
+          </tr>
+        </thead>
+        <tbody>
+          {products.map((product) => (
+            <tr key={product.id}>
+              <td>{product.id}</td>
+              <td>{product.UserID}</td>
+              <td>{product.Level}</td>
+              <td>{product.Gem}</td>
+              <td>{product.Yuan}</td>
+              <td>{product.Stone}</td>
+              <td>{product.UserName}</td>
+              <td>{product.updatedAt}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+    </div>
+  );
+};
+
 const App = () => {
   return (
     <Provider store={store}>
@@ -191,8 +241,8 @@ const App = () => {
           <Route path="/" element={<Layout />}>
             <Route index element={<Navigate to="/products" />}></Route>
             <Route path="products" element={<ProductPage />}></Route>
-            {/* <Route path="orders" element={<OrderPage />}></Route> */}
-            <Route path="products/:id" element={<ProductDetailsPage />}></Route>
+            <Route path="checkgem" element={<GemPage />}></Route>
+            {/* <Route path="products/:id" element={<ProductDetailsPage />}></Route> */}
           </Route>
         </Routes>
       </BrowserRouter>
